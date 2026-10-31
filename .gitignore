@@ -1,0 +1,63 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+.pnp
+.pnp.js
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# Keep example and test env files tracked
+!.env.example
+!.env.test
+
+# Logs and runtime diagnostics
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Test coverage and test runners
+coverage/
+*.lcov
+.nyc_output/
+
+# macOS / OS artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# IDE and Editor directories
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# VS Code (preserve settings/launch if needed, ignore user/workspace state)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# Docker & persistent storage volumes (for upcoming phases)
+data/
+*.pid
+*.seed
+*.pid.lock
