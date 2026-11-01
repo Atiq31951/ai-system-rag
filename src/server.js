@@ -26,9 +26,13 @@ function handleShutdown(_signal) {
     process.exit(0);
   });
 
-  // Force close after 10s if active long-lived requests hang
+  // Immediately close idle HTTP keep-alive connections so the server doesn't hang waiting for inactive clients
+  server.closeIdleConnections();
+
+  // Force close all remaining connections and exit after 10s if active long-lived requests hang
   const timer = setTimeout(() => {
     // logger.error('Graceful shutdown timed out after 10s. Forcing exit.');
+    server.closeAllConnections();
     process.exit(1);
   }, 10000);
 
