@@ -25,6 +25,9 @@ export function createApp() {
 
   // Application routes
   app.use('/health', healthRoutes);
+  app.get('/home', (_req, res) => {
+    res.json({ message: 'Hello World' });
+  });
 
   // Fallback 404 for unhandled routes
   app.use((req, _res, next) => {

@@ -69,6 +69,7 @@ export function errorHandler(err, req, res, _next) {
 
   // 4. Programmer bugs or unexpected system errors (fail-safe)
   // reqLogger.error({ err }, `Unhandled internal error: ${err.message}`);
+  console.error(err);
 
   const isProduction = config.nodeEnv === 'production';
   return res.status(500).json({

@@ -9,16 +9,16 @@ const isDev = config.nodeEnv === 'development';
  * In production/test, outputs high-throughput single-line NDJSON.
  */
 export const logger = pino({
-  level: config.logLevel,
+  level: config.logLevel || 'info',
   transport: isDev
     ? {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:HH:MM:ss.l',
-          ignore: 'pid,hostname',
-        },
-      }
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'SYS:HH:MM:ss.l',
+        ignore: 'pid,hostname',
+      },
+    }
     : undefined,
   base: {
     env: config.nodeEnv,

@@ -5,6 +5,7 @@ import { config } from './config/index.js';
 const app = createApp();
 
 const server = app.listen(config.port, () => {
+  console.log(`Server running on port ${config.port}`);
   // logger.info({ port: config.port, env: config.nodeEnv }, 'Server started successfully');
 });
 
@@ -13,15 +14,18 @@ const server = app.listen(config.port, () => {
  *
  * @param {'SIGTERM' | 'SIGINT'} signal
  */
-function handleShutdown(_signal) {
-  // logger.info({ signal: _signal }, `Received ${_signal}, initiating graceful shutdown...`);
+function handleShutdown(signal) {
+  console.log(`Received ${signal}, initiating graceful shutdown...`);
+  // logger.info({ signal }, `Received ${signal}, initiating graceful shutdown...`);
 
   // Stop accepting new incoming HTTP connections
   server.close((err) => {
     if (err) {
+      console.error('Error during server close:', err);
       // logger.error({ err }, 'Error during server close');
       process.exit(1);
     }
+    console.log('HTTP server closed, exiting cleanly.');
     // logger.info('HTTP server closed, exiting cleanly.');
     process.exit(0);
   });
@@ -31,6 +35,7 @@ function handleShutdown(_signal) {
 
   // Force close all remaining connections and exit after 10s if active long-lived requests hang
   const timer = setTimeout(() => {
+    console.error('Graceful shutdown timed out after 10s. Forcing exit.');
     // logger.error('Graceful shutdown timed out after 10s. Forcing exit.');
     server.closeAllConnections();
     process.exit(1);
@@ -45,12 +50,14 @@ function handleShutdown(_signal) {
 process.on('SIGTERM', () => handleShutdown('SIGTERM'));
 process.on('SIGINT', () => handleShutdown('SIGINT'));
 
-process.on('unhandledRejection', (_reason) => {
-  // logger.fatal({ err: _reason }, 'Unhandled Promise Rejection detected');
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Promise Rejection:', reason);
+  // logger.fatal({ err: reason }, 'Unhandled Promise Rejection detected');
   process.exit(1);
 });
 
-process.on('uncaughtException', (_err) => {
-  // logger.fatal({ err: _err }, 'Uncaught Exception detected');
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // logger.fatal({ err }, 'Uncaught Exception detected');
   process.exit(1);
 });
