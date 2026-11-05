@@ -5,6 +5,8 @@ import { z } from 'zod';
  * @property {number} port - HTTP server listening port
  * @property {'development' | 'production' | 'test'} nodeEnv - Node runtime environment
  * @property {'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent'} logLevel - Pino logging severity
+ * @property {string} ollamaBaseUrl - Base URL for the Ollama instance
+ * @property {string} ollamaModel - Default model name for Ollama
  */
 
 const envSchema = z.object({
@@ -17,6 +19,15 @@ const envSchema = z.object({
     }),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  OLLAMA_BASE_URL: z
+    .string()
+    .url({ message: 'OLLAMA_BASE_URL must be a valid URL' })
+    .default('http://localhost:11434')
+    .transform((val) => val.replace(/\/+$/, '')),
+  OLLAMA_MODEL: z
+    .string()
+    .min(1, { message: 'OLLAMA_MODEL cannot be empty' })
+    .default('llama3.2'),
 });
 
 /**
@@ -40,6 +51,8 @@ export function loadConfig() {
     port: parsed.data.PORT,
     nodeEnv: parsed.data.NODE_ENV,
     logLevel: parsed.data.LOG_LEVEL,
+    ollamaBaseUrl: parsed.data.OLLAMA_BASE_URL,
+    ollamaModel: parsed.data.OLLAMA_MODEL,
   });
 }
 
