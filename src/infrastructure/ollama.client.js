@@ -184,6 +184,7 @@ export class OllamaClient {
     format,
     options,
     stream = false,
+    think,
     signal,
   } = {}) {
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -195,6 +196,10 @@ export class OllamaClient {
       messages,
       stream: Boolean(stream),
     };
+
+    if (think !== undefined) {
+      payload.think = think;
+    }
 
     if (tools && Array.isArray(tools) && tools.length > 0) {
       payload.tools = tools;

@@ -51,13 +51,15 @@
 
 ## ৪. রোডম্যাপ (Roadmap Status)
 
-1. [x] **Socket.IO chat skeleton (fake word-by-word reply, no LLM)**
-2. [x] **Dummy data (users, products, orders) + fake auth via handshake token**
-3. [ ] **Ollama streaming + system prompt + guest/login logic**
-4. [ ] **Tool calling (inside the stream)**
-5. [ ] **RAG (policy docs: return, refund, shipping)**
-6. [ ] **Minimal HTML client (socket.io-client in the browser)**
-7. [ ] **LangChain**
+1. [x] **Simple echo chat with auth middleware (no LLM)**
+2. [x] **Reply from Ollama + system prompt (guest must log in for order/account questions)**
+3. [ ] **Conversation history per connection**
+4. [ ] **Tool calling (login checked in code, not only in prompt)**
+5. [ ] **RAG (return, refund, shipping policy)**
+6. [ ] **Streaming replies**
+7. [ ] **Minimal HTML client**
+8. [ ] **LangChain**
+9. [ ] **LangGraph**
 
 ---
 

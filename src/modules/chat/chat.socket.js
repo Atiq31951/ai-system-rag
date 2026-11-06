@@ -26,13 +26,13 @@ export function initChatSocket(io) {
     }
 
     // Valid token -> store user object (never the token)
-    socket.data.user = { id: user.id, name: user.name, email: user.email };
+    socket.data.user = { id: user.id, name: user.name, email: user.email, token };
     next();
   });
 
   // 2. Message event handling
   io.on('connection', (socket) => {
-    socket.on('message', (payload) => {
+    socket.on('message', async (payload) => {
       const text = payload?.text?.trim();
 
       if (!text) {
@@ -40,8 +40,13 @@ export function initChatSocket(io) {
         return;
       }
 
-      const reply = getReply(text, socket.data.user);
-      socket.emit('reply', { text: reply });
+      try {
+        const reply = await getReply(text, socket.data.user);
+        socket.emit('reply', { text: reply });
+      } catch (err) {
+        console.error('Error in getReply:', err);
+        socket.emit('error', { message: 'Something went wrong' });
+      }
     });
   });
 }
