@@ -1,10 +1,19 @@
+import { createServer } from 'node:http';
+import { Server as SocketIOServer } from 'socket.io';
+
 import { createApp } from './app.js';
 import { config } from './config/index.js';
 // import { logger } from './infrastructure/logger.js';
 
-const app = createApp();
+import { initChatSocket } from './modules/chat/chat.socket.js';
 
-const server = app.listen(config.port, () => {
+const app = createApp();
+const server = createServer(app);
+
+const io = new SocketIOServer(server);
+initChatSocket(io);
+
+server.listen(config.port, () => {
   console.log(`Server running on port ${config.port}`);
   // logger.info({ port: config.port, env: config.nodeEnv }, 'Server started successfully');
 });

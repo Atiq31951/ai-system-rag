@@ -1,0 +1,59 @@
+[
+  {
+    "id": "p1",
+    "name": "Wireless Noise-Canceling Headphones",
+    "category": "Electronics",
+    "price": 99.99,
+    "stock": 25
+  },
+  {
+    "id": "p2",
+    "name": "Mechanical Gaming Keyboard",
+    "category": "Electronics",
+    "price": 79.5,
+    "stock": 14
+  },
+  {
+    "id": "p3",
+    "name": "Ergonomic Office Chair",
+    "category": "Furniture",
+    "price": 199.0,
+    "stock": 8
+  },
+  {
+    "id": "p4",
+    "name": "Stainless Steel Water Bottle (1L)",
+    "category": "Accessories",
+    "price": 18.0,
+    "stock": 50
+  },
+  {
+    "id": "p5",
+    "name": "Running Shoes",
+    "category": "Footwear",
+    "price": 65.0,
+    "stock": 30
+  },
+  {
+    "id": "p6",
+    "name": "USB-C Fast Charging Hub",
+    "category": "Electronics",
+    "price": 35.0,
+    "stock": 40
+  },
+  {
+    "id": "p7",
+    "name": "Cotton Crewneck T-Shirt",
+    "category": "Apparel",
+    "price": 15.0,
+    "stock": 60
+  },
+  {
+    "id": "p8",
+    "name": "Smart Fitness Band",
+    "category": "Electronics",
+    "price": 45.0,
+    "stock": 0
+  }
+]
+

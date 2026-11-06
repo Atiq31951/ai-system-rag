@@ -1,7 +1,7 @@
 {
-  "name": "multi-tenant-ai-chat",
+  "name": "ecommerce-ai-chat",
   "version": "0.1.0",
-  "description": "Multi-tenant AI chat platform built with Node.js 24 and Express 5",
+  "description": "AI customer support chat built with Node.js 24 and Express 5",
   "type": "module",
   "engines": {
     "node": ">=24.0.0"
@@ -14,10 +14,12 @@
     "express": "^5.0.1",
     "pino": "^10.4.0",
     "pino-http": "^11.0.0",
+    "socket.io": "^4.8.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
-    "pino-pretty": "^13.2.0"
+    "pino-pretty": "^13.2.0",
+    "socket.io-client": "^4.8.4"
   }
 }

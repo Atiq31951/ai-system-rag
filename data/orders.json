@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ord-101",
+    "userId": "u1",
+    "items": [
+      { "productId": "p1", "qty": 1 },
+      { "productId": "p4", "qty": 2 }
+    ],
+    "status": "delivered",
+    "createdAt": "2026-10-15T10:30:00Z"
+  },
+  {
+    "id": "ord-102",
+    "userId": "u1",
+    "items": [
+      { "productId": "p2", "qty": 1 }
+    ],
+    "status": "shipped",
+    "createdAt": "2026-11-01T14:20:00Z"
+  },
+  {
+    "id": "ord-103",
+    "userId": "u2",
+    "items": [
+      { "productId": "p3", "qty": 1 }
+    ],
+    "status": "pending",
+    "createdAt": "2026-11-04T09:15:00Z"
+  },
+  {
+    "id": "ord-104",
+    "userId": "u2",
+    "items": [
+      { "productId": "p5", "qty": 1 },
+      { "productId": "p7", "qty": 3 }
+    ],
+    "status": "cancelled",
+    "createdAt": "2026-10-20T16:45:00Z"
+  },
+  {
+    "id": "ord-105",
+    "userId": "u1",
+    "items": [
+      { "productId": "p6", "qty": 1 }
+    ],
+    "status": "pending",
+    "createdAt": "2026-11-05T08:00:00Z"
+  }
+]
+

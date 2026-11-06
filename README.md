@@ -1,152 +1,124 @@
-# Multi-Tenant AI Customer Support Chat (E-commerce)
+# AI Customer Support Chat (E-commerce)
 
-একটি আধুনিক, মিনিমালিস্ট এবং স্কেলেবল AI-assisted কাস্টমার সাপোর্ট চ্যাট সিস্টেম। এটি ই-কমার্স অ্যাপ্লিকেশনের জন্য Node.js 24 এবং Express 5-এর ওপর ভিত্তি করে Clean Architecture প্যাটার্নে তৈরি করা হচ্ছে।
-
----
-
-## ১. প্রজেক্টের উদ্দেশ্য ও নীতিমালা (Design Principles)
-
-- **উদ্দেশ্য:** ই-কমার্স কাস্টমার সাপোর্টের জন্য AI চ্যাটবট তৈরি করা যা ক্রমান্বয়ে **Function Calling**, **RAG (Retrieval-Augmented Generation)**, এবং পরবর্তীতে **LangChain** ইন্টিগ্রেশন সমর্থন করবে।
-- **Minimal Noise:** অপ্রয়োজনীয় থার্ড-পার্টি প্যাকেজ এড়িয়ে চলা।
-- **Plain JavaScript (ESM):** কোনো ভারী বিল্ড টুল বা ট্রান্সপাইলার ছাড়া সরাসরি Node.js 24-এর নেটিভ ECMAScript Modules (ESM)।
-- **No Database:** ডেটা সংরক্ষণের জন্য কোনো বাহ্যিক ডেটাবেজের বদলে হালকা JSON ফাইল ব্যবহার।
-- **Local AI Engine:** বাহ্যিক প্রোভাইডারের ওপর নির্ভরশীল না হয়ে লোকাল Ollama দিয়ে রান করানো।
+একটি আধুনিক এবং পরিচ্ছন্ন AI-assisted কাস্টমার সাপোর্ট চ্যাট সিস্টেম। এটি একটি একক ই-কমার্স কোম্পানির জন্য Node.js 24, Express 5, এবং Socket.IO-এর ওপর ভিত্তি করে Clean Architecture নীতিতে তৈরি হচ্ছে।
 
 ---
 
-## ২. আর্কিটেকচার ও রিকোয়েস্ট ফ্লো (Architecture Flow)
+## ১. প্রজেক্টের উদ্দেশ্য ও নীতিমালা (Project Goal & Constraints)
 
-সিস্টেমটি Clean / Layered Architecture অনুসরণ করে তৈরি:
-
-```text
-[Frontend / Client]
-       │
-       ▼ (HTTP POST /chat)
-[Route Layer]              (src/app.js বা routes)
-       │
-       ▼
-[Controller Layer]         (Request validation, SSE Stream handling)
-       │
-       ▼
-[Service Layer]            (Business Rules, Prompt Engineering, RAG & Tool Orchestration)
-       │
-       ▼
-[Infrastructure Layer]     (src/infrastructure/ollama.client.js - Low-level HTTP Adapter)
-       │
-       ▼
-[Ollama Engine]            (Local LLM Server - Port 11434)
-```
-
-> **নোট:** `ollama.client.js`-কে `infrastructure/` ফোল্ডারে রাখা হয়েছে কারণ এটি কোনো বিজনেস রুলস জানে না, এটি কেবল একটি External HTTP Adapter। চ্যাট ও সাপোর্টের মূল বিজনেস লজিক থাকবে `service` লেয়ারে।
+- **উদ্দেশ্য:** ই-কমার্স কাস্টমার সাপোর্টের জন্য AI চ্যাটবট তৈরির আর্কিটেকচার শেখা।
+- **লার্নিং রোডম্যাপ:** Socket.IO চ্যাট $\rightarrow$ Tool/Function Calling $\rightarrow$ RAG $\rightarrow$ LangChain।
+- **Plain JavaScript (ESM):** কোনো বিল্ড টুল বা TypeScript ছাড়া সরাসরি Node.js 24 নেটিভ ফিচার (ESM, `--env-file`, `crypto.randomUUID`) ব্যবহার।
+- **Realtime Transport:** `socket.io` লাইব্রেরি (কোনো অতিরিক্ত rooms, namespaces বা জটিলতা ছাড়া)।
+- **No Database:** ডেটা সংরক্ষণের জন্য কোনো বাহ্যিক ডাটাবেজ ছাড়া `data/` ফোল্ডারের লোকাল JSON ফাইল ব্যবহার।
+- **Minimal Noise:** অপ্রয়োজনীয় থার্ড-পার্টি লাইব্রেরি বা অতিরিক্ত অ্যাবস্ট্রাকশন পরিহার করা।
 
 ---
 
-## ৩. এখন পর্যন্ত যা যা সম্পন্ন হয়েছে (Completed Work)
+## ২. আর্কিটেকচার ও বাউন্ডারি (Architecture Boundaries)
 
-### ক. প্রজেক্ট ক্লিনআপ ও ডিপেনডেন্সি মিনিমাইজেশন
-- অপ্রয়োজনীয় ফাইলসমূহ (`test/`, `.env.test`, `eslint.config.js`, `request-id.js`, `health/` module) রিমুভ করা হয়েছে।
-- আনইউজড প্যাকেজগুলো (`eslint`, `supertest`, `prettier` ইত্যাদি) বাদ দেওয়া হয়েছে।
-- রানটাইম প্যাকেজ হিসেবে শুধু `express`, `zod`, `pino`, `pino-http` এবং dev প্যাকেজ হিসেবে `nodemon`, `pino-pretty` রাখা হয়েছে।
-
-### খ. ডেভেলপমেন্ট ও স্ক্রিপ্টস
-- `nodemon` কনফিগার করা হয়েছে যাতে কোড পরিবর্তনের সাথে সাথে সার্ভার রিস্টার্ট নেয়।
-- `package.json`-এ শুধুমাত্র দুটি প্রয়োজনীয় স্ক্রিপ্ট রাখা হয়েছে:
-  - `npm run dev`: `nodemon --env-file=.env src/server.js`
-  - `npm start`: `node --env-file=.env src/server.js`
-
-### গ. এরর হ্যান্ডলিং ও কোর মিডলওয়্যার
-- **[src/infrastructure/errors.js](src/infrastructure/errors.js):** `AppError`, `BadRequestError`, `NotFoundError`, এবং `UnauthorizedError` রাখা হয়েছে।
-- **[src/middleware/error-handler.js](src/middleware/error-handler.js):** সেন্ট্রাল JSON এরর হ্যান্ডলার যা সব এররকে একটি প্রেডিক্টেবল ফরম্যাটে রিটার্ন করে। রেসপন্স থেকে অপ্রয়োজনীয় `requestId` বাদ দেওয়া হয়েছে এবং 500 এররের জন্য `console.error(err)` যুক্ত করা হয়েছে।
-- **[src/app.js](src/app.js):** টেস্ট রুট হিসেবে `GET /home` যোগ করা হয়েছে যা `{"message": "Hello World"}` রিটার্ন করে, এবং একটি 404 নট-ফাউন্ড হ্যান্ডলার রাখা হয়েছে।
-
-### ঘ. স্ট্যান্ডার্ড প্র্যাকটিস Logger (Commented Out)
-- **[src/infrastructure/logger.js](src/infrastructure/logger.js)** এবং **[src/middleware/http-logger.js](src/middleware/http-logger.js)**-এ Pino-এর স্ট্যান্ডার্ড বয়লারপ্লেট রাখা হয়েছে।
-- কোডের বিভিন্ন জায়গায় (`server.js`, `app.js`, `error-handler.js`) লগার সম্পর্কিত কলগুলো `commented out` রাখা হয়েছে, যাতে বর্তমানে কোনো অপ্রয়োজনীয় লগ আউটপুট না আসে, কিন্তু ভবিষ্যতে প্রয়োজন হলে সহজেই আন-কমেন্ট করে ব্যবহার করা যায়।
-
-### ঙ. Ollama ও Multi-Model ক্লায়েন্ট
-- **[src/infrastructure/ollama.client.js](src/infrastructure/ollama.client.js):** Node 24 native `fetch` ব্যবহার করে একটি প্রোডাকশন-রেডি Ollama ক্লায়েন্ট তৈরি করা হয়েছে।
-  - **Dynamic Model Support:** ডিফল্ট মডেল `.env` থেকে নেয়, তবে রানটাইমে যেকোনো ভিন্ন মডেল (যেমন: `qwen3:8b`, `deepseek-r1:7b`) পাস করা যায়।
-  - **Chat (`chat`):** কনভারসেশন হিস্ট্রি, Function Calling (`tools`), এবং Streaming (`stream: true`) সমর্থন করে।
-  - **Embeddings (`embed`):** পরবর্তী RAG ফিচারের জন্য ভেক্টর এমবেডিং তৈরির মেথড যোগ করা হয়েছে।
-  - **Resilient Error Handling:** Ollama সার্ভার অফলাইন থাকলে বা কোনো এরর দিলে স্বয়ংক্রিয়ভাবে `503 OLLAMA_UNAVAILABLE` বা সংশ্লিষ্ট `AppError` হ্যান্ডেল করে।
+- **`src/server.js`:** HTTP সার্ভার তৈরি করে এবং একই সাথে Express ও Socket.IO সার্ভারকে যুক্ত করে।
+- **`src/modules/chat/chat.socket.js`:** সকেট ইভেন্ট হ্যান্ডলার। Handshake auth মিডলওয়্যার (`io.use`), Zod ভ্যালিডেশন, `socket.data`-তে পার-কানেকশন স্টেট (user, busy) বজায় রাখা, এবং ক্লায়েন্টে ইভেন্ট এমিট করার কাজ করে। Socket.IO সম্পর্কিত কোড শুধুমাত্র এখানেই থাকে।
+- **`src/modules/chat/chat.service.js`:** ডোমেন সার্ভিস (`async function*` জেনারেটর)। এটি Socket.IO, HTTP বা Express সম্পর্কে কিছুই জানে না; শুধুমাত্র বিশুদ্ধ ইভেন্ট অবজেক্ট `{ type, ...data }` ইল্ড (yield) করে।
+- **`src/infrastructure/`:** এক্সটার্নাল অ্যাডাপ্টারস (যেমন: `ollama.client.js`, `data-store.js`)। এতে কোনো বিজনেস রুলস থাকে না।
+- **Express App:** শুধুমাত্র সাধারণ HTTP রুট (যেমন: `GET /home`) নিয়ন্ত্রণ করে।
 
 ---
 
-## ৪. প্রজেক্ট ফাইল স্ট্রাকচার (File Tree)
+## ৩. ইভেন্ট কন্ট্রাক্ট (Event Contract)
+
+### ক. Authentication (Handshake - কোনো ইভেন্ট নয়)
+ক্লায়েন্ট কানেক্ট করার সময় টোকেন পাস করে: `io(url, { auth: { token } })`
+- **টোকেন না থাকলে:** Guest হিসেবে কানেকশন গৃহীত হবে (`socket.data.user = null`)।
+- **ভ্যালিড টোকেন হলে:** ইউজার ডাটা সেভ হবে (`socket.data.user = { id, name, email }`), টোকেন কখনো স্টেটে রাখা হবে না।
+- **ইনভ্যালিড টোকেন হলে:** কানেকশন রিজেক্ট করা হবে (`next(new Error('Invalid token'))`); ক্লায়েন্ট পাবে `connect_error`।
+
+### খ. Client $\rightarrow$ Server
+| Event | Payload | অর্থ |
+| :--- | :--- | :--- |
+| `chat` | `{ content }` | ইউজারের পাঠানো চ্যাট মেসেজ |
+
+### গ. Server $\rightarrow$ Client
+| Event | Payload | কখন পাঠানো হয় |
+| :--- | :--- | :--- |
+| `ready` | `{ user: { id, name } \| null }` | কানেকশন সফল হওয়ার সাথে সাথে |
+| `token` | `{ text }` | রিপ্লাইয়ের প্রতিটি শব্দের খণ্ড/টোকেন |
+| `tool` | `{ name, status }` | টুল/ফাংশন এক্সিকিউট চলাকালীন |
+| `done` | `{}` | পুরো রিপ্লাই সম্পন্ন হলে |
+| `error` | `{ message }` | ইনভ্যালিড পেলোড, busy বা কোনো ফেইলিওর ঘটলে |
+
+---
+
+## ৪. রোডম্যাপ (Roadmap Status)
+
+1. [x] **Socket.IO chat skeleton (fake word-by-word reply, no LLM)**
+2. [x] **Dummy data (users, products, orders) + fake auth via handshake token**
+3. [ ] **Ollama streaming + system prompt + guest/login logic**
+4. [ ] **Tool calling (inside the stream)**
+5. [ ] **RAG (policy docs: return, refund, shipping)**
+6. [ ] **Minimal HTML client (socket.io-client in the browser)**
+7. [ ] **LangChain**
+
+---
+
+## ৫. ফাইল ও ফোল্ডার স্ট্রাকচার
 
 ```text
 ai-system-rag/
-├── README.md               # সম্পূর্ণ প্রজেক্ট ডকুমেন্টেশন
-├── .env                    # এনভায়রনমেন্ট কনফিগারেশন ফাইল
-├── .env.example            # এনভায়রনমেন্ট কনফিগারেশন টেমপ্লেট
+├── README.md
+├── .env
+├── .env.example
 ├── .gitignore
 ├── .nvmrc
 ├── .prettierrc
-├── package.json            # ডিপেনডেন্সি ও স্ক্রিপ্টস
-├── package-lock.json
+├── package.json
 ├── data/
-│   └── hr-policy.txt       # RAG-এর জন্য ডক ফাইল
+│   ├── users.json          # ডামি ইউজার ডেটা
+│   ├── products.json       # ডামি প্রোডাক্ট ডেটা
+│   └── orders.json         # ডামি অর্ডার ডেটা
+├── scripts/
+│   └── test-client.js      # CLI ভিত্তিক Socket.IO টেস্ট ক্লায়েন্ট
 └── src/
-    ├── app.js              # Express app ইন্সট্যান্স, মিডলওয়্যার ও রুটস
-    ├── server.js           # HTTP listener ও Graceful Shutdown হ্যান্ডলার
+    ├── app.js              # Express app কনফিগারেশন
+    ├── server.js           # HTTP + Socket.IO সার্ভার
     ├── config/
-    │   └── index.js        # Zod দিয়ে ভ্যালিডেট করা ফ্রোজেন কনফিগারেশন
+    │   └── index.js        # Zod env ভ্যালিডেশন
     ├── infrastructure/
-    │   ├── errors.js       # কাস্টম AppError ও সাব-ক্লাসেস
-    │   ├── logger.js       # Pino structured logger ইন্সট্যান্স
-    │   └── ollama.client.js # মাল্টি-মডেল Ollama HTTP ক্লায়েন্ট
-    └── middleware/
-        ├── error-handler.js # সেন্ট্রাল গ্লোবাল এরর হ্যান্ডলিং মিডলওয়্যার
-        └── http-logger.js   # Express HTTP রিকোয়েস্ট লগার
+    │   ├── data-store.js   # JSON ডাটা রিড হেল্পার
+    │   ├── errors.js       # কাস্টম AppError ক্লাসেস
+    │   ├── logger.js       # Pino লগার ইনস্ট্যান্স (commented boilerplate)
+    │   └── ollama.client.js # মাল্টি-মডেল Ollama ক্লায়েন্ট
+    ├── middleware/
+    │   ├── error-handler.js # সেন্ট্রাল এরর হ্যান্ডলার
+    │   └── http-logger.js   # HTTP লগার মিডলওয়্যার
+    └── modules/
+        └── chat/
+            ├── chat.service.js # ডোমেইন চ্যাট সার্ভিস (async generator)
+            └── chat.socket.js  # Socket.IO হ্যান্ডলার ও auth মিডলওয়্যার
 ```
 
 ---
 
-## ৫. কনফিগারেশন ও এনভায়রনমেন্ট ভ্যারিয়েবল
+## ৬. সার্ভার রান ও টেস্টিং নির্দেশিকা
 
-`.env` ফাইলে নিচের কনফিগারেশনগুলো সেট করা রয়েছে:
-
-```env
-PORT=3000
-NODE_ENV=development
-LOG_LEVEL=info
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=qwen3:8b
-```
-
----
-
-## ৬. সার্ভার রান করার নিয়ম
-
-১. প্রজেক্ট ডিরেক্টরিতে যান:
-```bash
-cd ai-system-rag
-```
-
-২. ডেভেলপমেন্ট মোডে রান করুন (Nodemon সহ):
+### সার্ভার স্টার্ট করুন:
 ```bash
 npm run dev
 ```
 
-৩. টেস্ট রুট চেক করুন:
+### টেস্ট ক্লায়েন্ট চালানো (`scripts/test-client.js`):
+
+১. **Guest User চ্যাট:**
 ```bash
-curl http://localhost:3000/home
-# আউটপুট: {"message":"Hello World"}
+node scripts/test-client.js "Hello support"
 ```
 
----
+২. **Logged-in User (Alice) চ্যাট:**
+```bash
+node scripts/test-client.js token-alice "Track my order"
+```
 
-## ৭. পরবর্তী রোডম্যাপ (Next Steps)
-
-- [ ] **Phase 1: Chat Route & Service:** 
-  - `POST /chat` এন্ডপয়েন্ট তৈরি করা (Streaming / SSE রেসপন্স সহ)।
-  - `chat.service.js` তৈরি করা যা ইউজার প্রম্পট ও সিস্টেম রুলস ম্যানেজ করবে।
-- [ ] **Phase 2: Function Calling (Tool Calling):**
-  - ই-কমার্স ডোমেইনের জন্য টুলস তৈরি করা (যেমন: `getOrderDetails(orderId)`, `cancelOrder(orderId)` ইত্যাদি)।
-  - Ollama-র `tools` প্যারামিটারের মাধ্যমে মডেল যাতে স্বয়ংক্রিয়ভাবে ফাংশন কল করতে পারে তা ইমপ্লিমেন্ট করা।
-- [ ] **Phase 3: RAG (Retrieval-Augmented Generation):**
-  - `data/` ফোল্ডারের ফাইলগুলো চাঙ্ক (chunk) করে ভেক্টর এমবেডিং তৈরি করা।
-  - কাস্টমার প্রশ্নের প্রাসঙ্গিক তথ্য খুঁজে এনে প্রম্পটের সাথে যুক্ত করা।
-- [ ] **Phase 4: LangChain Integration:**
-  - পরবর্তীতে প্রয়োজন অনুযায়ী ফ্রেমওয়ার্ক ইন্টিগ্রেশন।
-
+৩. **Invalid Token টেস্ট (Handshake failure):**
+```bash
+node scripts/test-client.js wrong-token "Hello"
+```
