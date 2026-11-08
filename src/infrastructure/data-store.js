@@ -69,3 +69,14 @@ export async function findOrderById(id) {
   return orders.find((o) => o.id === id) || null;
 }
 
+// Shipment helpers
+export async function getShipments() {
+  return readJson('shipments.json');
+}
+
+export async function findShipmentByOrderId(orderId) {
+  if (!orderId) return null;
+  const shipments = await getShipments();
+  return shipments.find((s) => s.orderId === orderId) || null;
+}
+

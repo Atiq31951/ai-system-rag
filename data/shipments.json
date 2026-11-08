@@ -1,0 +1,26 @@
+[
+  {
+    "orderId": "ord-101",
+    "carrier": "FastShip",
+    "trackingNumber": "FS100101",
+    "estimatedDelivery": "2026-10-18",
+    "events": [
+      { "date": "2026-10-16", "status": "picked_up", "location": "Penang warehouse" },
+      { "date": "2026-10-17", "status": "in_transit", "location": "Kuala Lumpur hub" },
+      { "date": "2026-10-18", "status": "delivered", "location": "Customer address" }
+    ]
+  },
+  {
+    "orderId": "ord-102",
+    "carrier": "FastShip",
+    "trackingNumber": "FS100102",
+    "estimatedDelivery": "2026-11-05",
+    "events": [
+      { "date": "2026-11-02", "status": "picked_up", "location": "Penang warehouse" },
+      { "date": "2026-11-03", "status": "in_transit", "location": "Kuala Lumpur hub" },
+      { "date": "2026-11-04", "status": "on_hold", "location": "Kuala Lumpur hub",
+        "note": "Delivery address postal code is invalid. Customer must confirm the correct address." }
+    ]
+  }
+]
+

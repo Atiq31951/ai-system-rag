@@ -24,7 +24,6 @@ server.listen(config.port, () => {
  * @param {'SIGTERM' | 'SIGINT'} signal
  */
 function handleShutdown(signal) {
-  console.log(`Received ${signal}, initiating graceful shutdown...`);
   // logger.info({ signal }, `Received ${signal}, initiating graceful shutdown...`);
 
   // Stop accepting new incoming HTTP connections
@@ -54,10 +53,14 @@ function handleShutdown(signal) {
   if (timer.unref) {
     timer.unref();
   }
+
+  io.close(() => {
+    process.exit(0);
+  });
 }
 
-process.on('SIGTERM', () => handleShutdown('SIGTERM'));
-process.on('SIGINT', () => handleShutdown('SIGINT'));
+process.on('SIGTERM', handleShutdown);
+process.on('SIGINT', handleShutdown);
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Promise Rejection:', reason);
