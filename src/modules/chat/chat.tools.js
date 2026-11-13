@@ -5,6 +5,7 @@ import {
   findOrderById,
   findShipmentByOrderId,
 } from '../../infrastructure/data-store.js';
+import { searchPolicies } from '../rag/rag.service.js';
 
 /**
  * Returns today's date in YYYY-MM-DD format. Uses config.appToday if set, else UTC date.
@@ -156,6 +157,23 @@ export const tools = [
           query: {
             type: 'string',
             description: 'The search term (product name or category, e.g. headphones, chair, apparel)',
+          },
+        },
+        required: ['query'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'searchPolicies',
+      description: 'Search shop policies for rules on refund, return, shipping, delivery time, payment methods, fake or damaged products, warranty, or other store rules. Use whenever a customer asks about policies, rules, or what to do if an item is fake, damaged, or delayed.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: {
+            type: 'string',
+            description: 'The policy question or topic to search for, e.g. "refund processing time" or "fake product report"',
           },
         },
         required: ['query'],
@@ -375,6 +393,26 @@ async function searchProducts({ query } = {}) {
 }
 
 /**
+ * Searches shop policies using semantic search (RAG).
+ *
+ * @param {Object} args
+ * @param {string} args.query
+ * @returns {Promise<Object>}
+ */
+async function executeSearchPolicies({ query } = {}) {
+  if (!query || typeof query !== 'string') {
+    return { results: [], message: 'No matching policy found' };
+  }
+
+  const results = await searchPolicies(query);
+  if (!results || results.length === 0) {
+    return { results: [], message: 'No matching policy found' };
+  }
+
+  return { results };
+}
+
+/**
  * Central tool runner. Calls the appropriate function based on tool name.
  * The user always comes from the server context, never from model arguments.
  *
@@ -401,6 +439,9 @@ export async function runTool(name, args = {}, user) {
   }
   if (name === 'searchProducts') {
     return searchProducts(args);
+  }
+  if (name === 'searchPolicies') {
+    return executeSearchPolicies(args);
   }
   return { error: `Unknown tool: ${name}` };
 }

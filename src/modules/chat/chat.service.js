@@ -51,11 +51,11 @@ export async function getReply(text, user) {
 
       const result = await runTool(name, args, user);
 
-      // if (result && result.error) {
-      //   console.log(`[round ${rounds}] ERROR ${name}`, args, '->', JSON.stringify(result.error));
-      // } else {
-      //   console.log(`[round ${rounds}] ${name}`, args, '->', result);
-      // }
+      if (result && result.error) {
+        console.log(`[round ${rounds}] ERROR ${name}`, args, '->', JSON.stringify(result.error));
+      } else {
+        console.log(`[round ${rounds}] ${name}`, args);
+      }
 
       messages.push({
         role: 'tool',

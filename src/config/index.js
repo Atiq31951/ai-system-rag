@@ -24,10 +24,12 @@ const envSchema = z.object({
     .url({ message: 'OLLAMA_BASE_URL must be a valid URL' })
     .default('http://localhost:11434')
     .transform((val) => val.replace(/\/+$/, '')),
-  OLLAMA_MODEL: z
+  OLLAMA_LLM_QWEN3_8B: z
     .string()
-    .min(1, { message: 'OLLAMA_MODEL cannot be empty' })
-    .default('llama3.2'),
+    .min(1, { message: 'OLLAMA_LLM_QWEN3_8B cannot be empty' })
+    .default('qwen3:8b')
+    .transform((val) => val.trim()),
+  OLLAMA_EMBEDDING_BGE_M3: z.string().optional(),
 });
 
 /**
@@ -52,7 +54,9 @@ export function loadConfig() {
     nodeEnv: parsed.data.NODE_ENV,
     logLevel: parsed.data.LOG_LEVEL,
     ollamaBaseUrl: parsed.data.OLLAMA_BASE_URL,
-    ollamaModel: parsed.data.OLLAMA_MODEL,
+    ollamaModel: parsed.data.OLLAMA_LLM_QWEN3_8B,
+    appToday: parsed.data.APP_TODAY,
+    embedModel: parsed.data.OLLAMA_EMBEDDING_BGE_M3 || 'bge-m3:latest',
   });
 }
 
