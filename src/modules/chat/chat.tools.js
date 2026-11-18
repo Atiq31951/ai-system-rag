@@ -405,6 +405,7 @@ async function executeSearchPolicies({ query } = {}) {
   }
 
   const results = await searchPolicies(query);
+  console.log("🚀 ~ executeSearchPolicies ~ results:", results)
   if (!results || results.length === 0) {
     return { results: [], message: 'No matching policy found' };
   }

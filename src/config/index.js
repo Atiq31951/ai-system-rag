@@ -30,6 +30,13 @@ const envSchema = z.object({
     .default('qwen3:8b')
     .transform((val) => val.trim()),
   OLLAMA_EMBEDDING_BGE_M3: z.string().optional(),
+  USE_OPENROUTER: z
+    .string()
+    .optional()
+    .default('false')
+    .transform((val) => val.toLowerCase() === 'true'),
+  OPENROUTER_API_KEY: z.string().optional().default(''),
+  OPENROUTER_MODEL: z.string().optional().default('nvidia/nemotron-3.5-lightning:free'),
 });
 
 /**
@@ -57,6 +64,9 @@ export function loadConfig() {
     ollamaModel: parsed.data.OLLAMA_LLM_QWEN3_8B,
     appToday: parsed.data.APP_TODAY,
     embedModel: parsed.data.OLLAMA_EMBEDDING_BGE_M3 || 'bge-m3:latest',
+    useOpenRouter: parsed.data.USE_OPENROUTER,
+    openrouterApiKey: parsed.data.OPENROUTER_API_KEY,
+    openrouterModel: parsed.data.OPENROUTER_MODEL,
   });
 }
 
